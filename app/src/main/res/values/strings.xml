@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">And.FF</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pre_title_storage_location">Storage location to store converted videos</string>
+    <string-array name="pref_storage_location_list_titles">
+        <item>Internal</item>
+        <item>External</item>
+    </string-array>
+    <string-array name="pref_storage_location_list_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+
+    <!-- Example settings for Notifications -->
+
+    <string name="pref_ringtone_silent">Silent</string>
+
+</resources>
