@@ -54,10 +54,12 @@ public class MyFFmpegItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFFmp
         holder.mProgressView.setProgress(mValues.get(position).progress);
 
         if (_progress < 100) {
+            mValues.get(position).isRunning = true;
             holder.mContentView.setText("Converting to " + mValues.get(position).extension);
-        } else {
-            if (holder.mItem.isFailed) holder.mContentView.setText("Failed.");
-            else holder.mContentView.setText("Completed.");
+        } else if (_progress == 100) {
+            mValues.get(position).isRunning = false;
+//            if (holder.mItem.isFailed) holder.mContentView.setText("Failed.");
+//            else holder.mContentView.setText("Completed.");
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

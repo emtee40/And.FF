@@ -241,6 +241,9 @@ public class HomeFragment extends Fragment {
 
         FloatingActionButton fab = (FloatingActionButton) container.getRootView().findViewById(R.id.fab);
         fab.setOnClickListener(childView -> {
+            TextView tv = (TextView) getView().findViewById(R.id.textViewInputFileName);
+            tv.setText("-- Please choose a file --");
+
             spinner_format = (Spinner) view.findViewById(R.id.spinnerFormat);
             String format = spinner_format.getSelectedItem().toString();
 
@@ -250,11 +253,12 @@ public class HomeFragment extends Fragment {
             String[] cmd = new String[]{"-y", "-i", ffmpeg_input, ffmpeg_output};
 
             //Add current cmd to queue
-            String listSize = String.valueOf((FFmpegListContent.ITEMS.size() + 1));
-            FFmpegListContent.ITEMS.add(new FFmpegListContent.FFmpegItem(listSize, ffmpeg_input, ffmpeg_output, "", format, cmd));
+            String id = String.valueOf((FFmpegListContent.ITEMS.size() + 1));
+            FFmpegListContent.ITEMS.add(new FFmpegListContent.FFmpegItem(id, ffmpeg_input, ffmpeg_output, "", format, cmd));
             FFmpegItemFragment.rvAdapter.notifyDataSetChanged();
 
-            if (FFmpegListContent.ITEMS.size() == 1) {
+            //Check if there is data, if there is, run it
+            if (FFmpegListContent.ITEMS.size() > 0) {
                 RunFFmpegLibrary(cmd);
             }
         });
@@ -398,8 +402,10 @@ public class HomeFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String result = intent.getStringExtra(FFmpegIntentService.KEY_RESPONSE);
-            if (result.equals("complete")) {
-                List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS).filter(x -> x.isCompleted == false).collect(Collectors.toList());
+            if (result.equals("complete_task")) {
+                List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS)
+                                                            .filter(x -> x.isCompleted == false && x.isFailed == false)
+                                                            .collect(Collectors.toList());
                 FFmpeg ffmpeg = FFmpeg.getInstance(_context);
                 if (list.size() > 0 && !ffmpeg.isFFmpegCommandRunning()) {
                     RunFFmpegLibrary(list.get(0).cmd);
@@ -412,7 +418,10 @@ public class HomeFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String update = intent.getStringExtra(FFmpegIntentService.KEY_UPDATE);
-            FFmpegListContent.ITEMS.get(0).progress = _ffmpegProgressBar.Calculation(update);
+            List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS).filter(x -> x.isRunning == true).collect(Collectors.toList());
+            if (list.size() > 0) {
+                list.get(0).progress = _ffmpegProgressBar.Calculation(update);
+            }
             FFmpegItemFragment.rvAdapter.notifyDataSetChanged();
         }
     }

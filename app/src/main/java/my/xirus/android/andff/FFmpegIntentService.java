@@ -31,6 +31,7 @@ public class FFmpegIntentService extends IntentService {
     public static final String ACTION_UPDATE = "android.xirus.andff.action.UPDATE";
     public static final String KEY_RESPONSE = "android.xirus.andff.KEY.RESPONSE";
     public static final String KEY_UPDATE = "android.xirus.andff.KEY.UPDATE";
+
     public ArrayList<String> str = new ArrayList<String>();
     NotificationManager notificationManager;
     Notification myNotification;
@@ -99,7 +100,6 @@ public class FFmpegIntentService extends IntentService {
 
                     @Override
                     public void onFailure(String message) {
-                        //mark as complete
                         List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS).filter(x -> x.isCompleted == false).collect(Collectors.toList());
                         list.get(0).isCompleted = true;
                         list.get(0).isFailed = true;
@@ -114,24 +114,13 @@ public class FFmpegIntentService extends IntentService {
                                 .setAutoCancel(true)
                                 .setSmallIcon(R.drawable.ic_stat_andff)
                                 .build();
-
                         notificationManager.notify(0, myNotification);
+
+                        FFmpegItemFragment.rvAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onSuccess(String message) {
-                        //mark as complete
-                        List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS).filter(x -> x.isCompleted == false).collect(Collectors.toList());
-                        list.get(0).isCompleted = true;
-                        list.get(0).isFailed = false;
-
-                        //return result
-                        Intent intentResponse = new Intent();
-                        intentResponse.setAction(ACTION_RESPONSE);
-                        intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
-                        intentResponse.putExtra(KEY_RESPONSE, "complete");
-                        sendBroadcast(intentResponse);
-
                         myNotification = new NotificationCompat.Builder(getApplicationContext())
                                 .setContentTitle("AndFF")
                                 .setContentText("Completed!")
@@ -142,22 +131,36 @@ public class FFmpegIntentService extends IntentService {
                                 .setAutoCancel(true)
                                 .setSmallIcon(R.drawable.ic_stat_andff)
                                 .build();
-
                         notificationManager.notify(0, myNotification);
-
-                        MediaScannerConnection.scanFile(
-                                getApplicationContext(),
-                                new String[]{list.get(0).outputFile},
-                                null,
-                                new MediaScannerConnection.OnScanCompletedListener() {
-                                    @Override
-                                    public void onScanCompleted(String path, Uri uri) {
-                                    }
-                                });
                     }
 
                     @Override
                     public void onFinish() {
+                        //mark as complete
+                        List<FFmpegListContent.FFmpegItem> list = Stream.of(FFmpegListContent.ITEMS).filter(x -> x.isCompleted == false).collect(Collectors.toList());
+                        if (list.size() > 0) {
+                            list.get(0).isCompleted = true;
+                            list.get(0).isFailed = false;
+
+                            MediaScannerConnection.scanFile(
+                                    getApplicationContext(),
+                                    new String[]{list.get(0).outputFile},
+                                    null,
+                                    new MediaScannerConnection.OnScanCompletedListener() {
+                                        @Override
+                                        public void onScanCompleted(String path, Uri uri) {
+                                        }
+                                    });
+
+                            FFmpegItemFragment.rvAdapter.notifyDataSetChanged();
+
+                            //return result
+                            Intent intentResponse = new Intent();
+                            intentResponse.setAction(ACTION_RESPONSE);
+                            intentResponse.addCategory(Intent.CATEGORY_DEFAULT);
+                            intentResponse.putExtra(KEY_RESPONSE, "complete_task");
+                            sendBroadcast(intentResponse);
+                        }
                     }
                 });
             } catch (FFmpegCommandAlreadyRunningException e) {

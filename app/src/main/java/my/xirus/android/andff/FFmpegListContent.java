@@ -29,6 +29,7 @@ public class FFmpegListContent {
         public int progress;
         public boolean isCompleted;
         public boolean isFailed;
+        public boolean isRunning;
 
         public FFmpegItem(String id, String inputFile, String outputFile, String params, String extension, String[] cmd) {
             this.id = id;
@@ -40,6 +41,7 @@ public class FFmpegListContent {
             this.cmd = cmd;
             this.isCompleted = false;
             this.isFailed = false;
+            this.isRunning = false;
         }
     }
 }

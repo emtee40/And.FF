@@ -18,8 +18,14 @@
     </string-array>
 
 
-    <!-- Example settings for Notifications -->
-
     <string name="pref_ringtone_silent">Silent</string>
 
+    <string name="about_content"><![CDATA[<p>FFmpeg Java Wrapper for Android compiled with x264, libass, fontconfig, freetype, fribidi and LAME.
+Supported architecture: armv7, armv7-neon, armv8, x86, x86_64.</p>
+<p>This app initially built as proof of concept, but after a while I have decided to publish this for everyone\'s usage. Email me for ideas to improve the app.</p>
+<p>Github: <a href="https://github.com/zaidaiman/And.FF">https://github.com/zaidaiman/And.FF</a></p>
+<p>Special thanks to<br />
+- <a href="http://writingminds.github.io/ffmpeg-android-java/">http://writingminds.github.io/ffmpeg-android-java/</a> for FFmpeg Java Wrapper for Android<br />
+- <a href="https://github.com/aNNiMON/Lightweight-Stream-API">https://github.com/aNNiMON/Lightweight-Stream-API</a> for Lightweight Stream</p>]]>
+    </string>
 </resources>
